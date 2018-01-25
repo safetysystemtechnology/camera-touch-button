@@ -1,6 +1,8 @@
 # Camera Touch Button
 Simple component to capture photo
 
+Keep the button pressed to open the camera release the button to capture the photo :)
+
 This library uses [CameraKit-Android](https://github.com/CameraKit/camerakit-android)
 
 
