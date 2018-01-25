@@ -1,12 +1,12 @@
 # Camera Touch Button
 Simple component to capture photo
 
-This library uses [https://github.com/CameraKit/camerakit-android](CameraKit-Android)
+This library uses [CameraKit-Android](https://github.com/CameraKit/camerakit-android)
 
 
 ## Demo
 <p align="center">
-  <img src="art/demo.gif" height="500" alt="video record android" />
+  <img src="art/camera-touch-button.gif" height="500" alt="video record android" />
 </p>
 
 ## Install
