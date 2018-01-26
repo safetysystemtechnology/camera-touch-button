@@ -7,14 +7,12 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.wonderkiln.camerakit.CameraKitError;
@@ -37,10 +35,6 @@ public class CameraTouchButton extends RelativeLayout {
 
     private int circleWidth = 0;
     private int circleHeight = 0;
-
-    interface CameraListener {
-        void onCaptured(CameraKitImage cameraKitImage);
-    }
 
     public CameraTouchButton(Context context) {
         super(context);
