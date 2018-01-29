@@ -1,12 +1,11 @@
 package br.com.safety.demo
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import br.com.safety.camera_touch_button.BuilderCameraView
 import com.wonderkiln.camerakit.CameraView
-
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -32,7 +31,7 @@ class MainActivity : AppCompatActivity() {
          */
         camera_touch_button.setCameraListener {
             Toast.makeText(this, "Captured", Toast.LENGTH_SHORT).show()
-            Log.d("camera_listener", "return photo here")
+            Log.d("MainAcitivity", "your_jpeg" + it.jpeg);
         }
     }
 

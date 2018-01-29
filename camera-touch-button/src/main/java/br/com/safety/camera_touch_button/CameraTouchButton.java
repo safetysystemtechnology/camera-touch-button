@@ -15,11 +15,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 
-import com.wonderkiln.camerakit.CameraKitError;
-import com.wonderkiln.camerakit.CameraKitEvent;
-import com.wonderkiln.camerakit.CameraKitEventListener;
+import com.wonderkiln.camerakit.CameraKitEventCallback;
 import com.wonderkiln.camerakit.CameraKitImage;
-import com.wonderkiln.camerakit.CameraKitVideo;
 import com.wonderkiln.camerakit.CameraView;
 
 /**
@@ -120,6 +117,8 @@ public class CameraTouchButton extends RelativeLayout {
              */
             addCameraView();
 
+            mCameraView.bindCameraKitListener(this);
+
             /**
              * Crop Views
              */
@@ -132,29 +131,6 @@ public class CameraTouchButton extends RelativeLayout {
              */
             mRootLayout.addView(mProgressFrameLayout, layoutParams);
 
-            this.mCameraView.addCameraKitListener(new CameraKitEventListener() {
-                @Override
-                public void onEvent(CameraKitEvent cameraKitEvent) {
-
-                }
-
-                @Override
-                public void onError(CameraKitError cameraKitError) {
-
-                }
-
-                @Override
-                public void onImage(CameraKitImage cameraKitImage) {
-                    if (mCameraListener != null) {
-                        mCameraListener.onCaptured(cameraKitImage);
-                    }
-                }
-
-                @Override
-                public void onVideo(CameraKitVideo cameraKitVideo) {
-
-                }
-            });
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 cropViews();
@@ -204,9 +180,16 @@ public class CameraTouchButton extends RelativeLayout {
     }
 
     private void hideAndCaptureImage() {
-        this.mCameraView.captureImage();
-        this.mProgressFrameLayout.setVisibility(INVISIBLE);
+        mCameraView.captureImage(new CameraKitEventCallback<CameraKitImage>() {
+            @Override
+            public void callback(CameraKitImage event) {
+                if (mCameraListener != null) {
+                    mCameraListener.onCaptured(event);
+                }
+            }
+        });
 
+        this.mProgressFrameLayout.setVisibility(INVISIBLE);
         removeCameraView();
     }
 

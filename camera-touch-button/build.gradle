@@ -24,6 +24,10 @@ android {
 
 }
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -33,4 +37,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
     compile 'com.wonderkiln:camerakit:0.13.1'
+    //compile group: 'com.wonderkiln', name:'camerakit', version:'0.12.1-Snapshot', changing: true
+
 }
