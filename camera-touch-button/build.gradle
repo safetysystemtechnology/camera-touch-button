@@ -1,15 +1,18 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+
+version = '2.2'
+group = 'br.com.safety'
 
 android {
     compileSdkVersion 26
 
-
-
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.2"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -24,8 +27,88 @@ android {
 
 }
 
-configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+if (project.hasProperty("android")) { // Android libraries
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.srcDirs
+    }
+
+    task javadoc(type: Javadoc) {
+        source = android.sourceSets.main.java.srcDirs
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+} else { // Java libraries
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            name 'CameraTouchButton'
+            description 'Simple component to record video on android Edit'
+            url 'https://github.com/safetysystemtechnology/camera-touch-button'
+            inceptionYear '2018'
+
+            packaging 'aar'
+            groupId 'br.com.safety'
+            artifactId 'camera-touch-button'
+            version '2.2'
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                connection 'https://github.com/safetysystemtechnology/camera-touch-button.git'
+                url 'https://github.com/safetysystemtechnology/camera-touch-button'
+
+            }
+            developers {
+                developer {
+                    name 'NetoDevel'
+                }
+            }
+        }
+    }
+}
+
+// Configure gradle-bintray-plugin (for publishing releases)
+bintray {
+    configurations = ['archives']
+
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+
+    publish = true
+
+    pkg {
+        repo = 'maven'
+        name = 'camera-touch-button'
+        userOrg = 'safety'
+        licenses = ['Apache-2.0']
+        labels = ['camera', 'camera-kit', 'android', 'photo']
+        websiteUrl = 'https://github.com/safetysystemtechnology/camera-touch-button'
+        issueTrackerUrl = 'https://github.com/safetysystemtechnology/camera-touch-button/issues'
+        vcsUrl = 'https://github.com/safetysystemtechnology/camera-touch-button.git'
+        publicDownloadNumbers = true
+    }
+
 }
 
 dependencies {
@@ -37,6 +120,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
     compile 'com.wonderkiln:camerakit:0.13.1'
-    //compile group: 'com.wonderkiln', name:'camerakit', version:'0.12.1-Snapshot', changing: true
+}
 
+repositories {
+    mavenCentral()
 }
