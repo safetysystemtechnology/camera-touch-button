@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-  compile 'br.com.safety:camera-touch-button:2.2'
+  compile 'br.com.safety:camera-touch-button:2.3'
 }
 
 ```

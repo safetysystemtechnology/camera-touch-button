@@ -19,10 +19,13 @@ import com.wonderkiln.camerakit.CameraKitEventCallback;
 import com.wonderkiln.camerakit.CameraKitImage;
 import com.wonderkiln.camerakit.CameraView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * @author NetoDevel
  */
-public class CameraTouchButton extends RelativeLayout {
+public class CameraTouchButton extends RelativeLayout implements View.OnTouchListener{
 
     private RelativeLayout mRootLayout;
     private Context mContext;
@@ -32,6 +35,9 @@ public class CameraTouchButton extends RelativeLayout {
 
     private int circleWidth = 0;
     private int circleHeight = 0;
+
+    private Timer timer;
+    private boolean clicked = false;
 
     public CameraTouchButton(Context context) {
         super(context);
@@ -60,30 +66,14 @@ public class CameraTouchButton extends RelativeLayout {
 
     public void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         mContext = context;
-
+        timer = new Timer();
         if (attrs != null && defStyleAttr == -1 && defStyleRes == -1) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.CameraTouchButton, defStyleAttr, defStyleRes);
             circleWidth = (int) typedArray.getDimension(R.styleable.CameraTouchButton_camera_circle_width, ViewGroup.LayoutParams.WRAP_CONTENT);
             circleHeight = (int) typedArray.getDimension(R.styleable.CameraTouchButton_camera_circle_height, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
-    }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                show();
-                return true;
-            case MotionEvent.ACTION_MOVE:
-                break;
-            case MotionEvent.ACTION_UP:
-                hideAndCaptureImage();
-                break;
-            default:
-                return false;
-        }
-        return true;
+        this.setOnTouchListener(this);
     }
 
     public void setup(RelativeLayout rootLayout, CameraView cameraView) {
@@ -168,10 +158,12 @@ public class CameraTouchButton extends RelativeLayout {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
         );
-
         cameraParams.addRule(CENTER_IN_PARENT, TRUE);
 
-        mProgressFrameLayout.addView(mCameraView, cameraParams);
+        if (clicked == false) {
+            mProgressFrameLayout.addView(mCameraView, cameraParams);
+            clicked = true;
+        }
     }
 
     public void hide() {
@@ -189,8 +181,15 @@ public class CameraTouchButton extends RelativeLayout {
             }
         });
 
-        this.mProgressFrameLayout.setVisibility(INVISIBLE);
-        removeCameraView();
+        mCameraView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (clicked) {
+                    mProgressFrameLayout.setVisibility(INVISIBLE);
+                    removeCameraView();
+                }
+            }
+        }, 300);
     }
 
     private void removeCameraView() {
@@ -199,10 +198,35 @@ public class CameraTouchButton extends RelativeLayout {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             this.mCameraView.setOutlineProvider(null);
         }
+
+        clicked = false;
     }
 
     public CameraView getCamera() {
         return this.mCameraView;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                show();
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        hideAndCaptureImage();
+                    }
+                }, 300);
+                break;
+            default:
+                return false;
+        }
+        return true;
     }
 
 }
