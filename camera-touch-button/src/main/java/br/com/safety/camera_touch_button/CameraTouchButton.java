@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Outline;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -14,6 +16,7 @@ import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.wonderkiln.camerakit.CameraKitEventCallback;
 import com.wonderkiln.camerakit.CameraKitImage;
@@ -205,28 +208,59 @@ public class CameraTouchButton extends RelativeLayout implements View.OnTouchLis
     public CameraView getCamera() {
         return this.mCameraView;
     }
+    private TimerTask pressTask;
+    private Boolean pressedLongEnough;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                show();
+                startCountingPressedTime();
                 return true;
             case MotionEvent.ACTION_MOVE:
                 break;
             case MotionEvent.ACTION_UP:
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        hideAndCaptureImage();
-                    }
-                }, 300);
+                hideAndCaptureWhenPressedLongEnough();
                 break;
             default:
                 return false;
         }
         return true;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void startCountingPressedTime() {
+        pressedLongEnough = false;
+        pressTask = new TimerTask() {
+            @Override
+            public void run() {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        show();
+                        pressTask = null;
+                        pressedLongEnough = true;
+                    }
+                });
+            }
+        };
+        timer.schedule(pressTask, 600);
+    }
+
+    private void hideAndCaptureWhenPressedLongEnough() {
+        if (pressTask != null) pressTask.cancel();
+        pressTask = null;
+        if (pressedLongEnough)
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    hideAndCaptureImage();
+                }
+            });
+        else
+            Toast.makeText(getContext(), R.string.press_and_hold, Toast.LENGTH_LONG).show();
+        pressedLongEnough = false;
     }
 
 }
