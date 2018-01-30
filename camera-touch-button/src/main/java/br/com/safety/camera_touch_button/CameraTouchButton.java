@@ -28,7 +28,9 @@ import java.util.TimerTask;
 /**
  * @author NetoDevel
  */
-public class CameraTouchButton extends RelativeLayout implements View.OnTouchListener{
+public class CameraTouchButton extends RelativeLayout implements View.OnTouchListener {
+
+    private static final String DEFAULT_TOUCH_MESSAGE = "Press and hold to take picture";
 
     private RelativeLayout mRootLayout;
     private Context mContext;
@@ -38,6 +40,7 @@ public class CameraTouchButton extends RelativeLayout implements View.OnTouchLis
 
     private int circleWidth = 0;
     private int circleHeight = 0;
+    private String touchMessage;
 
     private Timer timer;
     private boolean clicked = false;
@@ -74,6 +77,7 @@ public class CameraTouchButton extends RelativeLayout implements View.OnTouchLis
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.CameraTouchButton, defStyleAttr, defStyleRes);
             circleWidth = (int) typedArray.getDimension(R.styleable.CameraTouchButton_camera_circle_width, ViewGroup.LayoutParams.WRAP_CONTENT);
             circleHeight = (int) typedArray.getDimension(R.styleable.CameraTouchButton_camera_circle_height, ViewGroup.LayoutParams.WRAP_CONTENT);
+            touchMessage = (String) typedArray.getString(R.styleable.CameraTouchButton_touch_message);
         }
 
         this.setOnTouchListener(this);
@@ -259,7 +263,7 @@ public class CameraTouchButton extends RelativeLayout implements View.OnTouchLis
                 }
             });
         else
-            Toast.makeText(getContext(), R.string.press_and_hold, Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), touchMessage != null ? touchMessage : DEFAULT_TOUCH_MESSAGE, Toast.LENGTH_LONG).show();
         pressedLongEnough = false;
     }
 

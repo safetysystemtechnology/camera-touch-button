@@ -3,5 +3,6 @@
     <declare-styleable name="CameraTouchButton">
         <attr name="camera_circle_width" format="dimension"/>
         <attr name="camera_circle_height" format="dimension"/>
+        <attr name="touch_message" format="string"/>
     </declare-styleable>
 </resources>
